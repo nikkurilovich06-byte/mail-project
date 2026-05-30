@@ -9,13 +9,15 @@ class MailProcessor:
         self.processed_dir = Path(processed_dir)
         self.stats = stats
 
-    def process_mail(self):
+
+    def process_all(self): #обрабатывает все письма в папке входящих
         for file_path in self.inbox_dir.iterdir():
             if file_path.is_file():
                 self.process_one(file_path)
         return self.stats
     
-    def process_one(self, file_path):
+    
+    def process_one(self, file_path): #обрабатываем одно письмо, условно решаем что делать с ним
         try:
             message = self.reader.read(file_path)
             category = self.classifier.classify(message.content)
@@ -26,3 +28,18 @@ class MailProcessor:
             self.move_to_broken(file_path)
             self.stats.add_broken()
 
+
+    def move_to_category(self, file_path, category): #перемещаем письмо в папку своей категории
+        processed_folder = self.processed_dir
+        category_folder = processed_folder / category   
+        category_folder.mkdir(parents=True, exist_ok=True)
+        new_file_path = category_folder / file_path.name
+        shutil.move(str(file_path), str(new_file_path))
+
+
+    def move_to_broken(self, file_path): #перемещвем сломанное письмо в папку broken
+        processed_folder = self.processed_dir
+        broken_folder = processed_folder / 'broken'
+        broken_folder.mkdir(parents=True, exist_ok=True)
+        new_file_path = broken_folder / file_path.name
+        shutil.move(str(file_path), str(new_file_path))
