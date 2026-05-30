@@ -6,9 +6,8 @@ class Feature:
         self.weight = weight
     
     def word_found(self, data:str) -> bool:
-
         for keyword in self.keywords:
-            if keyword in text:
+            if keyword in data:
                 return True
         return False
 
@@ -17,6 +16,20 @@ class Feature:
         if self.word_found(data):
             return self.weight
         return 0
+
+class Category:
+    def __init__(self, name: str, features: list[Feature]):
+        self.categoryName=name
+        self.categoryFeatures=features
+    
+    def get_total_score(self, data: str)->int:
+        totalScore=0
+        for feature in self.categoryFeatures:
+            totalScore += feature.get_score(data)
+        return totalScore
+
+
+
 
 
     
