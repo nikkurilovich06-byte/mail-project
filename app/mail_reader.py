@@ -1,0 +1,33 @@
+from pathlib import Path
+from dataclasses import dataclass
+import chardet
+
+
+@dataclass
+class MailMessage:
+    filename: str
+    subject: str
+    sender: str
+    body: str
+
+
+class MailReader:
+
+    def __init__(self):
+        pass
+
+    def read(self, file_path: Path) -> MailMessage | None:
+
+        if file_path.suffix not in ['.eml', '.txt']:
+            # Неизвестный формат
+            return None
+
+        if file_path.stat().st_size == 0:
+            # Пустой файл
+            return None
+
+        raw_file = file_path.read_bytes()
+        encoding = chardet.detect(raw_file)['encoding'] or 'utf-8'
+        content = raw_file.decode(encoding, errors='replace')
+
+        return self._parse(file_path.name, content)
