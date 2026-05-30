@@ -1,4 +1,4 @@
-from app.classifier import Feature, Category
+from .classifier import Feature, Category
 
 spam_features = [
         Feature("срочность", ["срочно", "urgent"], 1),
