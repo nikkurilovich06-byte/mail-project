@@ -10,11 +10,16 @@ class Feature:
                 return True
         return False
 
+    def count_found_words(self,data)->int:
+        count=0
+        for keyword in self.keywords:
+            if keyword in data:
+                count += 1
+        return count
 
     def get_score(self, data: str) -> float:
-        if self.word_found(data):
-            return self.weight
-        return 0
+        #print(self.name, self.count_found_words(data)) - для проверки оставил
+        return self.count_found_words(data)/len(self.keywords)*self.weight
     
 
 
@@ -23,12 +28,13 @@ class Category:
         self.categoryName=name
         self.categoryFeatures=features
     
-    def get_total_score_normalized(self, data: str)->int:
+    def get_total_score_normalized(self, data: str)->float:
         totalScore=0
-        maxScore=sum(feature.weight for feature in self.categoryFeatures)
+        sum_weights=sum(abs(feature.weight) for feature in self.categoryFeatures)
         for feature in self.categoryFeatures:
             totalScore += feature.get_score(data)
-        return totalScore/maxScore
+        
+        return totalScore/sum_weights
 
 
 class MailClassifier:
@@ -48,17 +54,18 @@ class MailClassifier:
         if bestScore<self.minScore:
             return "needs_review"
         
-        return [bestCategory, scoresOfCategories] #поменять - оставить только bestCategory
+        return [bestCategory, scoresOfCategories] #потом поменять - оставить только bestCategory
 
 
 
-#ниже пока что для примера - потом покрасивее сделаем, что то уберем и т.д.
+#ниже пока что для примера - потом будет подгружаться из других файлов
 if __name__ == "__main__":
 
     spam_features = [
         Feature("срочность", ["срочно", "urgent"], 1),
         Feature("фишинг", ["логин", "пароль", "банковская карта"], 2),
-        Feature("выигрыш", ["вы выиграли", "приз", "подарок"], 1)
+        Feature("выигрыш", ["вы выиграли", "приз", "подарок"], 1),
+        Feature("штрафные слова", ["не работает", "уже второй день", "затронуты", "коллег"], -1)
     ]
 
     important_features = [
@@ -71,7 +78,7 @@ if __name__ == "__main__":
 
     classifier = MailClassifier([spam_category,important_category],0.1)
 
-    text1 = "Здравствуйте! Срочно требуется ваш логин, это важно, у нас ничего не работает"
+    text1 = "Здравствуйте! Срочно требуется ваш логин, это важно, ничего не работает"
     text2 = "Добрый день, как дела?"
     
     print()
