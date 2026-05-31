@@ -40,7 +40,9 @@ class MailProcessor:
 
             logging.info(f"{file_path.name} moved to {category}")
 
-        except Exception:
+        except Exception as e:
+            print("Ошибка при обработке файла:", file_path)
+            print(type(e).__name__, e)
             self.move_to_broken(file_path)
             self.stats.addBroken()
 

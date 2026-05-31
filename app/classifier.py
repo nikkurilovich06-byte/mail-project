@@ -24,7 +24,7 @@ class Feature:
 
     def get_feature_confidence(self, data: str) -> float:
         if self.word_found(data):
-            return self.confidence
+            return self.feature_confidence
         return 0
     
 
@@ -64,7 +64,7 @@ class MailClassifier:
         bestCategory = max(scoresOfCategories, key=scoresOfCategories.get)
         bestScore = scoresOfCategories[bestCategory]
 
-        if bestScore<self.minScore:
+        if bestScore<self.min_score:
             return "needs_review"
         print(bestCategory, scoresOfCategories)
         return bestCategory 
