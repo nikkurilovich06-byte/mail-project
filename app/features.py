@@ -16,5 +16,5 @@ important_features = [
 spam_category = Category("spam_phishing", spam_features)
 important_category = Category("important_category", important_features)
 
-categories = [spam_category, important_category]
+
 
