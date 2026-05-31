@@ -2,6 +2,8 @@ from pathlib import Path
 from .classifier import MailClassifier
 from .features import categories
 import shutil
+import logging
+
 
 class MailProcessor:
     def __init__(self, reader, classifier, inbox_dir, processed_dir, stats):
@@ -13,13 +15,18 @@ class MailProcessor:
 
 
     def process_all(self): #обрабатывает все письма в папке входящих
+        logging.info("Starting mail processing")
+
         if not self.inbox_dir.exists():
+            logging.error("Inbox folder not found")
+
             print("Inbox folder not found")
             return self.stats
-        
         for file_path in self.inbox_dir.iterdir():
             if file_path.is_file():
                 self.process_one(file_path)
+
+        logging.info("Mail processing completed")
         return self.stats
     
     
@@ -31,9 +38,13 @@ class MailProcessor:
             self.stats.addToCategory(category)
             self.stats.addProcessed()
 
+            logging.info(f"{file_path.name} moved to {category}")
+
         except Exception:
             self.move_to_broken(file_path)
             self.stats.addBroken()
+
+            logging.error(f"{file_path.name} moved to broken")
         self.stats.addTotal()
 
 
@@ -45,6 +56,8 @@ class MailProcessor:
         new_file_path = category_folder / file_path.name
         shutil.move(str(file_path), str(new_file_path))
 
+        logging.info(f"File {file_path.name} was moved to folder {category}")
+
 
     def move_to_broken(self, file_path): #перемещвем сломанное письмо в папку broken
         processed_folder = self.processed_dir
@@ -52,3 +65,5 @@ class MailProcessor:
         broken_folder.mkdir(parents=True, exist_ok=True)
         new_file_path = broken_folder / file_path.name
         shutil.move(str(file_path), str(new_file_path))
+
+        logging.info(f"File {file_path.name} was moved to folder broken")
