@@ -8,6 +8,7 @@ spam_features = [
     ]
 
 important_features = [
+        Feature("срочность", ["срочно", "urgent"], 1),
         Feature("важность", ["важно", "important"], 3),
         Feature("массовость", ["не работает", "уже второй день", "затронуты", "коллег"], 2),
     ]
@@ -17,4 +18,3 @@ important_category = Category("important_category", important_features)
 
 categories = [spam_category, important_category]
 
-classifier = MailClassifier(categories,0.1)
