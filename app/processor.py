@@ -28,11 +28,14 @@ class MailProcessor:
             message = self.reader.read(file_path)
             category = self.classifier.classify(message.content)
             self.move_to_category(file_path, category)
-            self.stats.add_category(category)
+            self.stats.addToCategory(category)
+            self.stats.addProcessed()
 
         except Exception:
             self.move_to_broken(file_path)
-            self.stats.add_broken()
+            self.stats.addBroken()
+        self.stats.addTotal()
+
 
 
     def move_to_category(self, file_path, category): #перемещаем письмо в папку своей категории

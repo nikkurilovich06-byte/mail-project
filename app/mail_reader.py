@@ -1,15 +1,16 @@
 from pathlib import Path
 from dataclasses import dataclass
+from .models import MailMessage
 import chardet
 
-
+'''
 @dataclass
 class MailMessage:
     filename: str
     subject: str
     sender: str
     body: str
-
+'''
 
 class MailReader:
 
@@ -36,11 +37,13 @@ class MailReader:
         lines = content.splitlines()
         subject = ""
         sender = ""
+        recepient = ""
         body = []
         in_body = False
 
         subject_keys = ["Subject:", "Тема:"]
         sender_keys = ["From:", "От кого:"]
+        recipient_keys=["To:", "Кому:"]
 
         for line in lines:
             if in_body:
@@ -49,12 +52,16 @@ class MailReader:
                 subject = line.split(":", 1)[1].strip()
             elif any(line.startswith(key) for key in sender_keys):
                 sender = line.split(":", 1)[1].strip()
+            elif any(line.startswith(key) for key in recepient_keys):
+                recepient = line.split(":", 1)[1].strip()
             elif line == "":
                 in_body = True
 
         return MailMessage(
             filename=filename,
+            path=path,
+            body="\n".join(body)
             subject=subject,
             sender=sender,
-            body="\n".join(body)
+            recipient = recipient
         )
