@@ -1,10 +1,11 @@
 
 
 class Feature:
-    def __init__ (self, name: str, keywords: list[str], weight: int):
+    def __init__ (self, name: str, keywords: list[str], confidence: int, is_penalty: bool):
         self.name = name
-        self.keywords = keywords
-        self.weight = weight
+        self.keywords = [keyword.lower() for keyword in keywords]
+        self.feature_confidence = confidence
+        self.is_penalty=is_penalty
     
     def word_found(self, data:str) -> bool:
         for keyword in self.keywords:
@@ -13,48 +14,59 @@ class Feature:
         return False
 
     def count_found_words(self,data)->int:
+        data=data.lower()
         count=0
         for keyword in self.keywords:
             if keyword in data:
+                print(keyword, self.name)
                 count += 1
         return count
 
-    def get_score(self, data: str) -> float:
-        #print(self.name, self.count_found_words(data)) - для проверки оставил
-        return self.count_found_words(data)/len(self.keywords)*self.weight
+    def get_feature_confidence(self, data: str) -> float:
+        if self.word_found(data):
+            return self.confidence
+        return 0
     
 
 
 class Category:
-    def __init__(self, name: str, features: list[Feature]):
-        self.categoryName=name
+    def __init__(self, name: str, features: list[Feature], min_confidence: int):
+        self.category_name=name
         self.category_features=features
+        self.min_confidence= min_confidence
     
-    def get_total_score_normalized(self, data: str)->float:
-        total_score=0
-        sum_weights=sum(abs(feature.weight) for feature in self.category_features)
+    def get_category_confidence(self, data: str)->float:
+        multiplication=1
         for feature in self.category_features:
-            total_score += feature.get_score(data)
-        
-        return total_score/sum_weights
+            if not feature.is_penalty:
+                multiplication *= (1-feature.get_feature_confidence(data))
+        total_confidence=1-multiplication
+
+        for feature in self.category_features:
+            if feature.is_penalty:
+                total_confidence*=(1-feature.get_feature_confidence(data))
+
+        if total_confidence>= self.min_confidence:
+            return total_confidence
+        return 0
 
 
 class MailClassifier:
-    def __init__(self,categories: list[Category], minScore: float):
+    def __init__(self, categories: list[Category], minScore: float):
         self.categories = categories
-        self.minScore=minScore
+        self.min_score=minScore
     
     def classify(self, data: str):
         scoresOfCategories={}
         for category in self.categories:
-            scoresOfCategories[category.categoryName] = category.get_total_score_normalized(data)
+            scoresOfCategories[category.category_name] = category.get_category_confidence(data)
         
         bestCategory = max(scoresOfCategories, key=scoresOfCategories.get)
         bestScore = scoresOfCategories[bestCategory]
 
         if bestScore<self.minScore:
             return "needs_review"
-        
+        print(bestCategory, scoresOfCategories)
         return bestCategory 
 
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 from .processor import MailProcessor
 from .mail_reader import MailReader
-from models import ProcessingStats
+from .models import ProcessingStats
 
 def main():
     inbox = Path("inbox/")
