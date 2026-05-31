@@ -60,7 +60,7 @@ class MailReader:
         return MailMessage(
             filename=filename,
             path=path,
-            body="\n".join(body)
+            body="\n".join(body),
             subject=subject,
             sender=sender,
             recipient = recipient
