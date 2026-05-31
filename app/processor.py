@@ -38,7 +38,7 @@ class MailProcessor:
             self.stats.addToCategory(category)
             self.stats.addProcessed()
 
-            logging.info(f"{file_path.name} moved to {category}")
+            logging.info(f"File {file_path.name} was moved to folder {category}")
 
         except Exception as e:
             print("Ошибка при обработке файла:", file_path)
@@ -46,7 +46,8 @@ class MailProcessor:
             self.move_to_broken(file_path)
             self.stats.addBroken()
 
-            logging.error(f"{file_path.name} moved to broken")
+            logging.warning(f"File {file_path.name} was moved to folder broken")
+
         self.stats.addTotal()
 
 
@@ -58,8 +59,6 @@ class MailProcessor:
         new_file_path = category_folder / file_path.name
         shutil.move(str(file_path), str(new_file_path))
 
-        logging.info(f"File {file_path.name} was moved to folder {category}")
-
 
     def move_to_broken(self, file_path): #перемещвем сломанное письмо в папку broken
         processed_folder = self.processed_dir
@@ -67,5 +66,3 @@ class MailProcessor:
         broken_folder.mkdir(parents=True, exist_ok=True)
         new_file_path = broken_folder / file_path.name
         shutil.move(str(file_path), str(new_file_path))
-
-        logging.info(f"File {file_path.name} was moved to folder broken")
