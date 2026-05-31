@@ -28,7 +28,7 @@ class MailReader:
 
         raw_file = file_path.read_bytes()
         encoding = chardet.detect(raw_file)['encoding'] or 'utf-8'
-        content = raw.decode(encoding, errors='replace')
+        content = raw_file.decode(encoding, errors='replace')
 
         return self._parse(file_path.name, content)
 
