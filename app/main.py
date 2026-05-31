@@ -1,17 +1,23 @@
 from pathlib import Path
+from mail_reader import MailReader
 from processor import MailProcessor
 
 
 def main():
-    inbox = Path("inbox/")
-    
-    processor = MailProcessor()
+    inbox_dir = Path("inbox/")
+    processed_dir = Path("processed/")
 
-    files = list(inbox.iterdir())
+    reader = MailReader()
+    stats = {} # ProcessingStats() когда будет готов
 
-    for file in files:
-        if file.is_file():
-            processor.process(file)
+    processor = MailProcessor(
+        reader=reader,
+        inbox_dir=inbox_dir,
+        processed_dir=processed_dir,
+        stats=stats
+    )
+
+    processor.process_all()
 
 
 if __name__ == "__main__":
