@@ -30,11 +30,12 @@ class MailReader:
         raw_file = file_path.read_bytes()
         encoding = chardet.detect(raw_file)['encoding'] or 'utf-8'
         content = raw_file.decode(encoding, errors='replace')
-    
-        return self._parse(file_path.name, content, file_path)
 
-    def _parse(self, filename: str, content: str, file_path: Path) -> MailMessage:
+        return self._parse(file_path, content)
+
+    def _parse(self, file_path: Path, content: str) -> MailMessage:
         lines = content.splitlines()
+        filename=file_path.name
         subject = ""
         sender = ""
         recipient = ""
