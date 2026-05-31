@@ -16,7 +16,6 @@ class MailProcessor:
         if not self.inbox_dir.exists():
             print("Inbox folder not found")
             return self.stats
-        
         for file_path in self.inbox_dir.iterdir():
             if file_path.is_file():
                 self.process_one(file_path)

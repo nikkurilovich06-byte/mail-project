@@ -29,17 +29,18 @@ class MailReader:
 
         raw_file = file_path.read_bytes()
         encoding = chardet.detect(raw_file)['encoding'] or 'utf-8'
-        content = raw.decode(encoding, errors='replace')
+        content = raw_file.decode(encoding, errors='replace')
+    
+        return self._parse(file_path.name, content, file_path)
 
-        return self._parse(file_path.name, content)
-
-    def _parse(self, filename: str, content: str) -> MailMessage:
+    def _parse(self, filename: str, content: str, file_path: Path) -> MailMessage:
         lines = content.splitlines()
         subject = ""
         sender = ""
-        recepient = ""
+        recipient = ""
         body = []
         in_body = False
+        path = file_path
 
         subject_keys = ["Subject:", "Тема:"]
         sender_keys = ["From:", "От кого:"]
@@ -52,15 +53,15 @@ class MailReader:
                 subject = line.split(":", 1)[1].strip()
             elif any(line.startswith(key) for key in sender_keys):
                 sender = line.split(":", 1)[1].strip()
-            elif any(line.startswith(key) for key in recepient_keys):
-                recepient = line.split(":", 1)[1].strip()
+            elif any(line.startswith(key) for key in recipient_keys):
+                recipient = line.split(":", 1)[1].strip()
             elif line == "":
                 in_body = True
 
         return MailMessage(
             filename=filename,
             path=path,
-            body="\n".join(body),
+            content="\n".join(body),
             subject=subject,
             sender=sender,
             recipient = recipient
