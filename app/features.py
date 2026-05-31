@@ -8,6 +8,7 @@ spam_features = [
     ]
 
 important_features = [
+    Feature("срочность", ["срочно", "urgent"], 1),
         Feature("важность", ["важно", "important"], 3),
         Feature("массовость", ["не работает", "уже второй день", "затронуты", "коллег"], 2),
     ]
