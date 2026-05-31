@@ -3,7 +3,7 @@
 class Feature:
     def __init__ (self, name: str, keywords: list[str], weight: int):
         self.name = name
-        self.keywords = keywords
+        self.keywords = [keyword.lower() for keyword in keywords]
         self.weight = weight
     
     def word_found(self, data:str) -> bool:
@@ -13,9 +13,11 @@ class Feature:
         return False
 
     def count_found_words(self,data)->int:
+        data=data.lower()
         count=0
         for keyword in self.keywords:
             if keyword in data:
+                print(keyword, self.name)
                 count += 1
         return count
 
@@ -54,7 +56,7 @@ class MailClassifier:
 
         if bestScore<self.minScore:
             return "needs_review"
-        
+        print(bestCategory, scoresOfCategories)
         return bestCategory 
 
 
